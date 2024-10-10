@@ -28,8 +28,8 @@ def draw():
   c_ans = $$0$$
   #$$$
   ###TEACHER INPUTS
-  coord1 = (-5,1)
-  coord2 = (-8,4)
+  coord1 = (-1,-4)
+  coord2 = (-3,6)
   # snapped_x = actual_pos_x(coord[0])
   # snapped_y = actual_pos_y(coord[1])
   # ellipse(snapped_x, snapped_y, grid_size // 2, grid_size // 2)
