@@ -1,3 +1,5 @@
+from p5 import *
+
 coord_list = []
 orange = '#ffe7c2'
 red = '#ff1a40'
