@@ -1,4 +1,5 @@
 from p5 import *
+
 coord_list = []
 orange = '#ffe7c2'
 red = '#ff1a40'
@@ -24,29 +25,28 @@ def draw():
   global is_pressed
   ###STUDENT INPUTS
   #$$$
+  m = $$1$$
+  c = 0
   #$$$
   ###TEACHER INPUTS
-  #start_coords, end_coords = get_y(m, c)
+  start_coords, end_coords = get_y(m, c)
   background(255)
   #colouring the rectangles
   xyaxis()
   grid()
   push()
   stroke('purple')
-  #graph_line(start_coords, end_coords)
+  graph_line(start_coords, end_coords)
   pop()
   if coord_list:
+    for i in range(len(coord_list)):
+      if coord_list[i][1] != m * coord_list[i][0] + c:
+        coord_list.pop(i)
     while len(coord_list) > 2:
       coord_list.pop()
-    if len(coord_list) == 2:
-      m = (coord_list[0][1] - coord_list[1][1])/ (coord_list[0][0] - coord_list[1][0])
-      c = coord_list[0][1] - m * coord_list[0][0]
-      start_coord, end_coord = get_y(m, c)
-      push()
-      stroke('purple')
-      graph_line(start_coord, end_coord)
-      pop()
-      highlight_c(c)
+    if len(coord_list) > 1:
+    #to state rise and run and thus gradient
+      rise_run(coord_list, m)
     for coord in coord_list:
       push()
       fill(200)
@@ -57,7 +57,7 @@ def draw():
       pop()
 
   
-  qn_prompt()
+  qn_prompt(m, c, start_coords, end_coords)
   drawMousePos()
   push()
   win = False
@@ -73,48 +73,45 @@ def draw():
   # graph_line(start_coords_ans, end_coords_ans)
   pop()
   
-def highlight_c(c):
-  push()
-  y = actual_pos_y(c)
-  x = actual_pos_x(0)
-  fill(b_yellow)
-  ellipse(x, y, grid_size / 2, grid_size / 2)
-  textSize(15)
-  fill(purple)
-  noStroke()
-  c = round(c,1)
-  rect(x + grid_size - 5, y - grid_size /4, textWidth(f'c = {c}') + 10, 20, 20)
-  fill('black')
-  textStyle(BOLD)
-  text(f'c = {c}', x + grid_size, y)
-  pop()
+  
 
 def rise_run(coord_list, m):
   ext_pt = (coord_list[0][0], coord_list[1][1])
-  rise = max(coord_list[0][1],coord_list[1][1]) - min(coord_list[0][1],coord_list[1][1])
-  run = max(coord_list[0][0],coord_list[1][0]) - min(coord_list[0][0],coord_list[1][0])
+  if coord_list[0][0] > coord_list[1][0]:
+    left = coord_list[1]
+    right = coord_list[0]
+  else:
+    left = coord_list[0]
+    right = coord_list[1]
+  rise = right[1] - left[1]
+  run = right[0] - left[0]
   dotted(coord_list[0], ext_pt)
   push()
   textStyle(BOLD)
   
   dotted(coord_list[1], ext_pt)
-  
-  x = 275
+  if rise < 0:
+    x = 350
+  else:
+    x = 10
   y = 325
   push()
-  textSize(25)
+  textSize(18)
   textAlign(LEFT, CENTER)
-  fill(purple)
+  r, g, b = 245, 225, 255
+  fill(r, g, b, 200)
   noStroke()
-  rect(x - 5, y - grid_size * 3, textWidth('gradient = rise/run') + 10, grid_size * 3 + 25, 25)
+  rect(x - 5, y - grid_size * 3, textWidth('slope = rise/run') + 10, grid_size * 3 + 25, 25)
+  fill(c_green)
+  text('slope ', x, y)
   fill('black')
-  text('gradient = rise/run', x, y)
+  text('= rise/run', x + textWidth('slope '), y)
 
-  text(f'= {rise}/{run} = {m}', x, y - grid_size * 2)
-  
+  text(f'= {rise}/{run}', x + textWidth('slope '), y - grid_size)
+  text(f'= {m}', x + textWidth('slope '), y - grid_size * 2)
   pop()
-  text_riserun(coord_list[1], ext_pt, 'run')
-  text_riserun(coord_list[0], ext_pt, 'rise')
+  text_riserun(coord_list[1], ext_pt, 'run', run)
+  text_riserun(coord_list[0], ext_pt, 'rise', rise)
   pop()
   
 def get_y(m, c):
@@ -250,7 +247,7 @@ def get_correct(start, end):
   y_sq = (start[1] - end[1]) ** 2
   return (x_sq + y_sq) ** 0.5
 
-def qn_prompt():
+def qn_prompt(m, c, start, end):
   push()
   noStroke()
   fill(149, 173, 190, 230)
@@ -271,17 +268,18 @@ def qn_prompt():
   #   return ans, fill_col
   # m, m_fill = settle_ans(m_ans, win_m, 300)
   # c, c_fill = settle_ans(c_ans, win_c, 415)
-  # textSize(40)
-  # if m == 1:
-  #   m = ''
-  # else:
-  #   m = str(new_round(m))
-  # c = str(new_round(c))
+  textSize(40)
+  if m == 1:
+    m = ''
+  else:
+    m = str(new_round(m))
+  c = str(new_round(c))
   textSize(35)
-  colorful_text(f"y=mx+c", 25, 370, 'white', {'x' : 'black', 'y': 'black'}, "")
+  colorful_text(f"y = mx+c", 20, 370, 'black', {'m' : c_green, 'c' : a_blue}, "")
   fill('white')
-  textSize(22)
-  text("click 2 pts to draw a line and find c!", 320, 370)
+  textSize(25)
+  fill("black")
+  text("click 2 points on line to find m!", 330, 370)
   # colorful_text(f"m={m}", 270, 370, 'white', {"c": c_green, 'x' : red, 'y': blue, 'm' : b_yellow, str(m) : m_fill}, "")
   # colorful_text(f"c={c}", 385, 370, 'white', {"c": c_green, 'x' : red, 'y': blue, 'm' : b_yellow, str(c) : c_fill}, "")
   pop()
@@ -402,16 +400,14 @@ def axis_line(start_coords, end_coords):
  
   pop()
 
-def text_riserun(coord1, coord2, rise_run):
+def text_riserun(coord1, coord2, rise_run, v):
   push()
   x = actual_pos_x((coord1[0] + coord2[0])/2)
   y = actual_pos_y((coord1[1] + coord2[1])/2)
   if rise_run == 'rise':
-    d = abs(coord2[1] - coord1[1])
-    x -= textWidth(f"{rise_run}: {d}") * 1.5
+    x -= textWidth(f"{rise_run}: {v}") * 1.5
   elif rise_run == 'run':
-    d = abs(coord2[0] - coord1[0])
-    x -= textWidth(f"{rise_run}: {d}")
+    x -= textWidth(f"{rise_run}: {v}")
     y += grid_size
     
 
@@ -419,9 +415,9 @@ def text_riserun(coord1, coord2, rise_run):
   push()
   noStroke()
   fill(purple)
-  rect(x - 3, y - grid_size / 4, textWidth(f"{rise_run}: {d}") + grid_size /3, 20, 10)
+  rect(x - 3, y - grid_size / 4, textWidth(f"{rise_run}: {v}") + grid_size /3, 20, 10)
   pop()
-  text(f"{rise_run}: {d}", x, y)
+  text(f"{rise_run}: {v}", x, y)
   pop()
 
 
