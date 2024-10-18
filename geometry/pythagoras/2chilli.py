@@ -1,74 +1,42 @@
 from p5 import *
 
-import random
 blue = 70, 130, 180
 yellow = 255, 216, 1
 greenn = 35, 140, 35
-printed = False
+
 def setup():
   createCanvas(500,400)
   background('white')
-  noStroke()
-  fill('#c2c2ff')
+  fill(14, 99, 151)
   rect(0, 300, width, 100)
   textStyle(BOLD)
-  prompt = Text('c =', (350, 335))
+  prompt = Text('c =', (200, 335))
   prompt.fill = greenn
   prompt.size = 50
-  prompt2 = Text(' ?', (425, 335))
+  prompt2 = Text(' ?', (275, 335))
   prompt2.fill = 255, 255, 255
   prompt2.size = 50
-  promptb = Text('b =', (200, 335))
-  promptb.fill = yellow
-  promptb.size = 50
-  promptb2 = Text(' ?', (275, 335))
-  promptb2.fill = 255, 255, 255
-  promptb2.size = 50
-  prompta = Text('a =', (50, 335))
-  prompta.fill = blue
-  prompta.size = 50
-  prompta2 = Text(' ?', (125, 335))
-  prompta2.fill = 255, 255, 255
-  prompta2.size = 50
   prompt.draw()
   prompt2.draw()
-  promptb.draw()
-  promptb2.draw()
-  prompta.draw()
-  prompta2.draw()
   textStyle(NORMAL)
 
 def draw():
-  global printed
   default()
-  ## TEACHER INPUTS (inputs cannot be <= 0)
-  a_correct = 15
-  b_correct = 8
+  ## TEACHER INPUTS
+  a = 11 #must be less than b (leg)
+  b = 60 #must be greater than a (hypotenuse)
   ## STUDENT INPUTS BELOW
   #$$$
-  a = $$0$$
-  b = $$0$$
+  a_squared = $$0$$
+  b_squared = $$0$$
+  c_squared = $$0$$
   c = $$0$$
   #Remember the Pythagoras Theorem!
   #$$$
-  colours = ((183, 94, 43), (224, 45, 112), '#986FD8')
-  c_correct = hypo(a_correct, b_correct)
-  area = 0.5 * (a * b_correct)
-  options = [a_correct, b_correct, int(c_correct)]
-  random.shuffle(options)
-  area_text = Text('Options:', (275, 250))
-  area_text.fill = 0, 168, 140
-  area_text.size = 30
-  area_text.draw()
-  if not printed:
-    for i, el in enumerate(options):
-      printed = True
-      text = Text(el, (415, 250 - i * 50))
-      text.fill = 'black'
-      text.size = 40
-      text.draw()
+  a_sq_correct = a ** 2
+  b_sq_correct = b ** 2
   green = 135, 199, 101
-  
+  c_correct = hypo(a, b)
   start_RA = (100, 75)
   frame_r = frameCount/100
   end_frame = False
@@ -76,56 +44,37 @@ def draw():
     frame_r = 1
     noLoop()
     end_frame = True
-  r = get_r(a_correct,b_correct, 100)
-  triangle_fill = RightTriangle(a_correct, b_correct)
+  r = get_r(a,b, 100)
+  triangle_fill = RightTriangle(a, b)
   triangle_fill.draw(start_RA[0], start_RA[1])
-  a_end = (start_RA[0], start_RA[1] + a * r * frame_r)
-  a_correct_end = (start_RA[0], start_RA[1] + a_correct * r)
+  a_end = (start_RA[0], start_RA[1] + a * r)
   a_line = Line(start_RA,a_end)
-  
+  a_line.draw()
   
 
   b_start = start_RA
-  b_end = (start_RA[0] + b * r * frame_r, start_RA[1])
-  b_correct_end = (start_RA[0] + b_correct * r, start_RA[1])
+  b_end = (start_RA[0] + b * r, start_RA[1])
   b_line = Line(b_start, b_end)
-  
+  b_line.draw()
 
 
   
   off = c/c_correct
-  c_start = a_correct_end
-  c_end = (c_start[0] + b_correct * r * frame_r * off, c_start[1] - a_correct * r * frame_r * off)
+  c_start = a_end
+  c_end = (c_start[0] + b * r * frame_r * off, c_start[1] - a * r * frame_r * off)
   c_line = Line(c_start, c_end)
   if end_frame:
     c_line.strokeWeight = 10
     if c == c_correct:
-      c_line.strokecolour = green
-
-    elif c != 0:
-      c_line.strokecolour = 'red'
-
-    if b == b_correct:
-      b_line.strokecolour = green
-
-    elif b != 0:
-      b_line.strokecolour = 'red'
-      
-    if a == a_correct:
-      a_line.strokecolour = green
-
-    elif a != 0:
-      a_line.strokecolour = 'red'
-
-    if (b == b_correct) and (c == c_correct) and (a == a_correct):
+      c_line.strokecolour = 'green'
       success()
-      res_text = Text('You did it!', (300,30))
+      res_text = Text('You did it!', (300,250))
       res_text.fill = '#01BC39'
       res_text.size = 35
       res_text.draw()
-  a_line.draw()
+    elif c != 0:
+      c_line.strokecolour = 'red'
   c_line.draw()
-  b_line.draw()
       #res_text = Text('Try Again!', (200,300))
       #res_text.fill = 'red'
       #res_text.size = 35
@@ -133,23 +82,47 @@ def draw():
   #init_triangle = RightTriangle(a, b)
   #init_triangle.draw(100,100)
   #fill
-  a_mid = ((start_RA[0] + a_correct_end[0])/2 - 70,(start_RA[1] + a_correct_end[1])/2)
-  b_mid = ((b_start[0] + b_correct_end[0])/2 - 30,(b_start[1] + b_correct_end[1])/2 - 30)
+  a_mid = ((start_RA[0] + a_end[0])/2 - 70,(start_RA[1] + a_end[1])/2)
+  b_mid = ((b_start[0] + b_end[0])/2 - 30,(b_start[1] + b_end[1])/2 - 30)
   c_coords = (b_mid[0] + 50, a_mid[1])
   #print(a_mid, b_mid)
   a_text = Text(f'a = {new_round(a)}', a_mid)
   b_text = Text(f'b = {new_round(b)}', b_mid)
-  c_text = Text(f'c = {new_round(c)}', c_coords)
+  if c == 0:
+    q = '?'
+  else:
+    q = new_round(c)
+  c_text = Text(f'c = {q}', c_coords)
   a_text.fill = blue
   b_text.fill = yellow
   c_text.fill = greenn
   
+  
   #a_text.strokecolour = 'light'
   a_text.draw()
   b_text.draw()
-  c_text.draw()
-  rect(start_RA[0], start_RA[1], 30, 30)
 
+  c_text.draw()
+  a_sq_text = a_text
+  a_sq_text.text = f"a² = {a_squared}"
+  a_sq_text.coords = (a_text.coords[0] - 20, a_text.coords[1] - 50)
+  a_sq_text.draw()
+  b_sq_text = b_text
+  b_sq_text.text = f"b² = {b_squared}"
+  b_sq_text.coords = (b_text.coords[0], b_text.coords[1] - 30)
+  b_sq_text.draw()
+  #rect(start_RA[0], start_RA[1], 4 * r, 4 * r)
+  if a_squared == a_sq_correct:
+    a_sq_corr_text = a_sq_text
+    a_sq_corr_text.text = "Correct!"
+    a_sq_corr_text.coords = (a_sq_text.coords[0], a_sq_text.coords[1] - 30)
+    a_sq_corr_text.draw()
+  if b_squared == b_sq_correct:
+    b_sq_corr_text = b_sq_text
+    b_sq_corr_text.text = "Correct!"
+    b_sq_corr_text.coords = (b_sq_text.coords[0] + 100, b_sq_text.coords[1])
+    b_sq_corr_text.draw()
+  
 
 def get_r(a, b, border):
   #gets ratio of line depending on length of legs
@@ -228,8 +201,6 @@ class RightTriangle:
 #treasure_map = TreasureMap((100, 200))
 
 def new_round(number):
-    if number == 0:
-      return '?'
     # Convert the number to a string
     number_str = str(number)
 
@@ -253,5 +224,3 @@ def new_round(number):
     # Convert the rounded string back to a float
 
     return rounded_number_str
-
-    
